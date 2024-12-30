@@ -2,7 +2,10 @@
 
 #include "CoordinateSystem.h"
 #include <QDebug>
-CoordinateSystem::CoordinateSystem(QObject *parent) : QObject(parent) {}
+
+CoordinateSystem::CoordinateSystem(QObject *parent) : QObject(parent) {
+    nw = new NeuralNetwork();
+}
 
 QVector<QPoint> CoordinateSystem::clickedPoints() const {
     return m_clickedPoints;
