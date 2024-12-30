@@ -5,9 +5,15 @@ import QtQuick.Layouts 1.0
 
 import CoordinateSystem 1.0
 import ScreenTools 1.0
+import CustomWidgets 1.0
 
 Window {
     id: mainWindow
+
+    ScreenTools {
+        id: _screen_tools
+    }
+
     visible: true
     width: 1000
     height: 800
@@ -93,19 +99,10 @@ Window {
 
                 RowLayout {
                     id: crow1
-                    Item {
-                        implicitWidth: 120
-                        implicitHeight: 40
-                        Rectangle {
-                            anchors.fill: parent
-                            color: "yellow"
-                        }
-                        Text {
-                            id: text_class
-                            text: "Class"
-                            anchors.right: parent.right    // Metni yatay ve dikey olarak ortalar
-                                    anchors.verticalCenter: parent.verticalCenter  // Dikeyde ortalama
-                        }
+                    CustomLabel {
+                        Layout.minimumWidth: _screen_tools.default_label_width
+                        Layout.minimumHeight: _screen_tools.default_label_height
+                        text: "Class"
                     }
 
                     // ComboBox (Seçenek kutusu)
@@ -123,19 +120,10 @@ Window {
 
                 RowLayout {
                     id: crow2
-                    Item {
-                        implicitWidth: 120
-                        implicitHeight: 40
-                        Rectangle {
-                            anchors.fill: parent
-                            color: "yellow"
-                        }
-                        Text {
-                            id: text_epoc
-                            text: "Epoc"
-                            anchors.right: parent.right    // Metni yatay ve dikey olarak ortalar
-                            anchors.verticalCenter: parent.verticalCenter  // Dikeyde ortalama
-                        }
+                    CustomLabel {
+                        Layout.minimumWidth: _screen_tools.default_label_width
+                        Layout.minimumHeight: _screen_tools.default_label_height
+                        text: "Epoc"
                     }
                     ComboBox {
                         id: cmbx_epoc
@@ -156,19 +144,10 @@ Window {
                 }
                 RowLayout {
                     id: crow3
-                    Item {
-                        implicitWidth: 120
-                        implicitHeight: 40
-                        Rectangle {
-                            anchors.fill: parent
-                            color: "yellow"
-                        }
-                        Text {
-                            id: text_lrate
-                            text: "Learning Rate"
-                            anchors.right: parent.right    // Metni yatay ve dikey olarak ortalar
-                                    anchors.verticalCenter: parent.verticalCenter  // Dikeyde ortalama
-                        }
+                    CustomLabel {
+                        Layout.minimumWidth: _screen_tools.default_label_width
+                        Layout.minimumHeight: _screen_tools.default_label_height
+                        text: "Learning Rate"
                     }
 
                     TextField {

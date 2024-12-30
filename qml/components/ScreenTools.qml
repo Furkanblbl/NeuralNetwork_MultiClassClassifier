@@ -42,4 +42,11 @@ Item {
     property real implicitButtonWidth:              Math.round(defaultFontPixelWidth *  5.0)
     property real implicitButtonHeight:             Math.round(defaultFontPixelHeight * 1.6)
 
+    property real radius:                       10
+    property real border_size:                  5
+    property real default_margin:               5
+    property real default_label_width:          120
+    property real default_label_height:         40
+    readonly property string label_text_color:  "white"
+    readonly property string label_back_color:  "#354956"
 }

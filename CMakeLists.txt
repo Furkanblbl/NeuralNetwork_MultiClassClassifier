@@ -48,6 +48,7 @@ qt_add_qml_module(NeuralNetworkApp
         qml/MainWindow.qml
         qml/components/ScreenTools.qml
         qml/widgets/CustomButton.qml
+        qml/widgets/CustomLabel.qml
 )
 
 qt_add_qml_module(createdModule
@@ -56,6 +57,7 @@ qt_add_qml_module(createdModule
     QML_FILES
         qml/components/ScreenTools.qml
         qml/widgets/CustomButton.qml
+        qml/widgets/CustomLabel.qml
     RESOURCE_PREFIX "/qmlmodules"
 )
 
