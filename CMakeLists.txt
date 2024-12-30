@@ -47,6 +47,7 @@ qt_add_qml_module(NeuralNetworkApp
     QML_FILES
         qml/MainWindow.qml
         qml/components/ScreenTools.qml
+        qml/widgets/CustomButton.qml
 )
 
 qt_add_qml_module(createdModule
@@ -54,6 +55,7 @@ qt_add_qml_module(createdModule
     VERSION 1.0
     QML_FILES
         qml/components/ScreenTools.qml
+        qml/widgets/CustomButton.qml
     RESOURCE_PREFIX "/qmlmodules"
 )
 
