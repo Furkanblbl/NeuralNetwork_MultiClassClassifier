@@ -4,6 +4,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 
 import CoordinateSystem 1.0
+import ScreenTools 1.0
 
 Window {
     id: mainWindow

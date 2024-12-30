@@ -1,0 +1,3 @@
+module ScreenTools
+
+ScreenTools 1.0 ../../qml/components/ScreenTools.qml

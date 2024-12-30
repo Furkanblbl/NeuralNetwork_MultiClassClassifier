@@ -46,14 +46,14 @@ qt_add_qml_module(NeuralNetworkApp
     VERSION 1.0
     QML_FILES
         qml/MainWindow.qml
-        qml/components/CoordinateSystem.qml
+        qml/components/ScreenTools.qml
 )
 
-qt_add_qml_module(compsModule
-    URI comps
+qt_add_qml_module(createdModule
+    URI ScreenTools
     VERSION 1.0
     QML_FILES
-        qml/components/CoordinateSystem.qml
+        qml/components/ScreenTools.qml
     RESOURCE_PREFIX "/qmlmodules"
 )
 
