@@ -20,12 +20,14 @@ include_directories(include)
 # Declare header files relative path
 set(HEADERS
     include/CoordinateSystem.h
+    include/NeuralNetwork.h
 )
 
 # Declare source files relative path
 set(SOURCES
     src/main.cpp
     src/CoordinateSystem.cpp
+    src/NeuralNetwork.cpp
 )
 
 # Add header and source files to qt executable process
