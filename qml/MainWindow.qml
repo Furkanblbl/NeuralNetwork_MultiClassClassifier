@@ -15,27 +15,38 @@ Window {
     }
 
     visible: true
-    width: 1000
-    height: 800
-    title: "Koordinat Sistemi"
+    width: _screen_tools._width
+    height: _screen_tools._height
+    title: "410447 Muhammet Enes EMIR - Neural Network"
+
+    color: "#edebe9"
 
     RowLayout {
         id: main_layout
         anchors.top: parent.top
         anchors.left: parent.left
-        spacing: 10
+        anchors.topMargin:  10 * _screen_tools.default_widget_margin
+        anchors.leftMargin: 2 * _screen_tools.default_widget_margin
 
         Rectangle {
             id: coordinateSystem
             width: 640
             height: 480
-            color: "#222222"
+            color: "#f3f2f1"
+            border.width: 2
+            border.color: _screen_tools.default_widget_border_color
+
+            property var clicked_color: ["red", "green", "blue", "#c931c9", "#c96b00", "#56024d"]
+            property string point_color: ""
+            property int selected_class: -1
+            property string selected_epoch: "none"
+            property string learning_rate: "none"
 
             Canvas {
                 id: canvas
                 anchors.fill: parent
-                property var clickedPoints: []  // Koordinatlar buraya kaydedilecek
-                property var cs: CoordinateSystem { // C++ sınıfını burada kullanıyoruz
+                property var clickedPoints: []
+                property var cs: CoordinateSystem {
                     id: coordSys
                 }
 
@@ -44,22 +55,21 @@ Window {
                     ctx.clearRect(0, 0, width, height);
                     ctx.strokeStyle = "black";
 
-                    // X ve Y eksenlerini çiz
                     ctx.beginPath();
-                    ctx.moveTo(width / 2, 0); // Y ekseni
+                    ctx.moveTo(width / 2, 0);
                     ctx.lineTo(width / 2, height);
-                    ctx.moveTo(0, height / 2); // X ekseni
+                    ctx.moveTo(0, height / 2);
                     ctx.lineTo(width, height / 2);
                     ctx.stroke();
 
-                    // Tıklanan her noktada '+' işareti çiz
                     for (var i = 0; i < clickedPoints.length; i++) {
                         var point = clickedPoints[i];
+                        ctx.strokeStyle = point.color;
                         ctx.beginPath();
-                        ctx.moveTo(point.x - 5, point.y); // Sol yatay çizgi
-                        ctx.lineTo(point.x + 5, point.y); // Sağ yatay çizgi
-                        ctx.moveTo(point.x, point.y - 5); // Üst dikey çizgi
-                        ctx.lineTo(point.x, point.y + 5); // Alt dikey çizgi
+                        ctx.moveTo(point.x - 5, point.y);
+                        ctx.lineTo(point.x + 5, point.y);
+                        ctx.moveTo(point.x, point.y - 5);
+                        ctx.lineTo(point.x, point.y + 5);
                         ctx.stroke();
                     }
                 }
@@ -70,16 +80,8 @@ Window {
                         var clickedX = mouse.x;
                         var clickedY = mouse.y;
 
-                        // Koordinatları clickedPoints listesine ekle
-                        canvas.clickedPoints.push(Qt.point(clickedX, clickedY));
-
-                        // Koordinatları C++ sınıfına gönder
+                        canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.point_color});
                         coordSys.clickedPoints = canvas.clickedPoints;
-
-                        // Koordinatları konsola yazdır
-                        console.log("Koordinatlar: X = " + clickedX + ", Y = " + clickedY);
-
-                        // Canvas'ı yeniden çiz
                         canvas.requestPaint();
                     }
                 }
@@ -90,7 +92,10 @@ Window {
             id: configurations
             width: mainWindow.width - coordinateSystem.width - 20
             height: coordinateSystem.height
-            color: "#222222"
+            color: "#edebe9"
+            border.color: _screen_tools.default_widget_border_color
+            border.width: 2
+
             ColumnLayout {
                 id: configuration_layout
                 anchors.top: parent.top
@@ -109,9 +114,15 @@ Window {
                     }
 
                     CustomComboBox {
+                        id: cmbox_class
                         Layout.minimumWidth: configurations.width - _screen_tools.default_widget_width - 20
                         Layout.minimumHeight: _screen_tools.default_widget_height
                         model: ["Class 1", "Class 2", "Class 3", "Class 4"]
+                        onCurrentIndexChanged: {
+                            coordinateSystem.selected_class = currentIndex
+                            coordinateSystem.point_color = coordinateSystem.clicked_color[coordinateSystem.selected_class]
+                            console.log("coordinateSystem.point_color:", coordinateSystem.point_color)
+                        }
                     }
                 }
 
@@ -129,6 +140,10 @@ Window {
                         Layout.minimumWidth: configurations.width - _screen_tools.default_widget_width - 20
                         Layout.minimumHeight: _screen_tools.default_widget_height
                         model: ["1", "9", "99", "999", "9999", "99999", "999999", "9999999"]
+                        onCurrentIndexChanged: {
+                            coordinateSystem.selected_epoch = model[currentIndex]
+                            console.log("coordinateSystem.selected_epoch:", model[currentIndex])
+                        }
                     }
                 }
                 RowLayout {
@@ -143,10 +158,14 @@ Window {
                     }
 
                     TextField {
-                        id: cmbx_learn
+                        id: tfield_lrate
                         Layout.minimumWidth: configurations.width - _screen_tools.default_widget_width - 20
                         Layout.minimumHeight: _screen_tools.default_widget_height
                         placeholderText: "Example: 0.01"
+                        onTextChanged: {
+                            coordinateSystem.learning_rate = tfield_lrate.text;
+                            console.log("coordinateSystem.learning_rate ", tfield_lrate.text)
+                        }
                     }
                 }
             }

@@ -18,7 +18,7 @@ Label {
         color: _screen_tools.default_widget_back_color
         radius: _screen_tools.default_widget_radius
         anchors.fill: parent
-        border.color: _screen_tools.default_widget_back_color
+        border.color: _screen_tools.default_widget_border_color
         border.width: _screen_tools.default_widget_border_size
         Text {
             id: lbl_text
