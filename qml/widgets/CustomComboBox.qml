@@ -12,10 +12,11 @@ ComboBox {
     }
 
     model: ["Default Item 1", "Default Item 2", "Default Item 3", "Default Item 4"]
+    property int selected_item: -1
 
     background: Rectangle {
         color: _screen_tools.default_widget_back_color
-        border.color: _screen_tools.default_widget_back_color
+        border.color: _screen_tools.default_widget_border_color
         border.width: _screen_tools.default_widget_border_size
         radius: _screen_tools.default_widget_radius
     }
@@ -51,6 +52,5 @@ ComboBox {
     }
 
     onCurrentIndexChanged: {
-
     }
 }
