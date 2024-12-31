@@ -39,8 +39,8 @@ Window {
             property var clicked_color: ["red", "green", "blue", "#c931c9", "#c96b00", "#56024d"]
             property string point_color: ""
             property int selected_class: -1
-            property string selected_epoch: "none"
-            property string learning_rate: "none"
+            property int selected_epoch: -1
+            property double learning_rate: -1
 
             Canvas {
                 id: canvas
@@ -64,7 +64,7 @@ Window {
 
                     for (var i = 0; i < clickedPoints.length; i++) {
                         var point = clickedPoints[i];
-                        ctx.strokeStyle = point.color;
+                        ctx.strokeStyle = coordinateSystem.clicked_color[point.color];
                         ctx.beginPath();
                         ctx.moveTo(point.x - 5, point.y);
                         ctx.lineTo(point.x + 5, point.y);
@@ -80,7 +80,7 @@ Window {
                         var clickedX = mouse.x;
                         var clickedY = mouse.y;
 
-                        canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.point_color});
+                        canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.selected_class});
                         coordSys.clickedPoints = canvas.clickedPoints;
                         canvas.requestPaint();
                     }
@@ -121,7 +121,7 @@ Window {
                         onCurrentIndexChanged: {
                             coordinateSystem.selected_class = currentIndex
                             coordinateSystem.point_color = coordinateSystem.clicked_color[coordinateSystem.selected_class]
-                            console.log("coordinateSystem.point_color:", coordinateSystem.point_color)
+                            // console.log("coordinateSystem.point_color:", coordinateSystem.point_color)
                         }
                     }
                 }
@@ -142,7 +142,8 @@ Window {
                         model: ["1", "9", "99", "999", "9999", "99999", "999999", "9999999"]
                         onCurrentIndexChanged: {
                             coordinateSystem.selected_epoch = model[currentIndex]
-                            console.log("coordinateSystem.selected_epoch:", model[currentIndex])
+                            coordSys.epocSize = coordinateSystem.selected_epoch;
+                            // console.log("coordinateSystem.selected_epoch:", model[currentIndex])
                         }
                     }
                 }
@@ -164,7 +165,8 @@ Window {
                         placeholderText: "Example: 0.01"
                         onTextChanged: {
                             coordinateSystem.learning_rate = tfield_lrate.text;
-                            console.log("coordinateSystem.learning_rate ", tfield_lrate.text)
+                            coordSys.learningRate = coordinateSystem.learning_rate;
+                            // console.log("coordinateSystem.learning_rate ", tfield_lrate.text)
                         }
                     }
                 }
