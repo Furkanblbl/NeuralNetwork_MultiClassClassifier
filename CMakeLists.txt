@@ -49,6 +49,7 @@ qt_add_qml_module(NeuralNetworkApp
         qml/components/ScreenTools.qml
         qml/widgets/CustomButton.qml
         qml/widgets/CustomLabel.qml
+        qml/widgets/CustomComboBox.qml
 )
 
 qt_add_qml_module(createdModule
@@ -58,6 +59,7 @@ qt_add_qml_module(createdModule
         qml/components/ScreenTools.qml
         qml/widgets/CustomButton.qml
         qml/widgets/CustomLabel.qml
+        qml/widgets/CustomComboBox.qml
     RESOURCE_PREFIX "/qmlmodules"
 )
 

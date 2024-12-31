@@ -2,3 +2,4 @@ module CustomWidgets
 
 CustomButton 1.0 ../../qml/widgets/CustomButton.qml
 CustomLabel 1.0 ../../qml/widgets/CustomLabel.qml
+CustomComboBox 1.0 ../../qml/widgets/CustomComboBox.qml

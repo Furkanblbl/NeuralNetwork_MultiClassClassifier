@@ -48,5 +48,10 @@ Item {
     property real default_label_width:          120
     property real default_label_height:         40
     readonly property string label_text_color:  "white"
-    readonly property string label_back_color:  "#354956"
+    readonly property string label_back_color:  "#333333"
+
+    property real default_width:                    120
+    property real default_height:                   40
+    readonly property string default_text_color:    "white"
+    readonly property string default_back_color:    "#354956"
 }

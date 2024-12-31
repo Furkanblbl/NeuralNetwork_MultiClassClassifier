@@ -105,16 +105,10 @@ Window {
                         text: "Class"
                     }
 
-                    // ComboBox (Seçenek kutusu)
-                    ComboBox {
-                        id: cmbx_class
-                        width: configurations.width / 3
-                        model: ListModel {
-                            ListElement { name: "Class 1" }
-                            ListElement { name: "Class 2" }
-                        }
-                        onCurrentIndexChanged: {
-                        }
+                    CustomComboBox {
+                        Layout.minimumWidth: _screen_tools.default_label_width
+                        Layout.minimumHeight: _screen_tools.default_label_height
+                        model: ["Class 1", "Class 2", "Class 3", "Class 4"]
                     }
                 }
 
@@ -125,21 +119,10 @@ Window {
                         Layout.minimumHeight: _screen_tools.default_label_height
                         text: "Epoc"
                     }
-                    ComboBox {
-                        id: cmbx_epoc
-                        width: configurations.width / 3
-                        model: ListModel {
-                            ListElement { name: "1" }
-                            ListElement { name: "9" }
-                            ListElement { name: "99" }
-                            ListElement { name: "999" }
-                            ListElement { name: "9999" }
-                            ListElement { name: "99999" }
-                            ListElement { name: "999999" }
-                            ListElement { name: "9999999" }
-                        }
-                        onCurrentIndexChanged: {
-                        }
+                    CustomComboBox {
+                        Layout.minimumWidth: _screen_tools.default_label_width
+                        Layout.minimumHeight: _screen_tools.default_label_height
+                        model: ["1", "9", "99", "999", "9999", "99999", "999999", "9999999"]
                     }
                 }
                 RowLayout {
