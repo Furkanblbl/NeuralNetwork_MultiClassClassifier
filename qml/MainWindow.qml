@@ -29,7 +29,7 @@ Window {
             id: coordinateSystem
             width: 640
             height: 480
-            color: "lightgray"
+            color: "#222222"
 
             Canvas {
                 id: canvas
@@ -90,7 +90,7 @@ Window {
             id: configurations
             width: mainWindow.width - coordinateSystem.width - 20
             height: coordinateSystem.height
-            color: "#faf0f0"
+            color: "#222222"
             ColumnLayout {
                 id: configuration_layout
                 anchors.top: parent.top
@@ -99,43 +99,54 @@ Window {
 
                 RowLayout {
                     id: crow1
+                    Layout.topMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.leftMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.rightMargin: 2 * _screen_tools.default_widget_margin
                     CustomLabel {
-                        Layout.minimumWidth: _screen_tools.default_label_width
-                        Layout.minimumHeight: _screen_tools.default_label_height
+                        Layout.minimumWidth: _screen_tools.default_widget_width
+                        Layout.minimumHeight: _screen_tools.default_widget_height
                         text: "Class"
                     }
 
                     CustomComboBox {
-                        Layout.minimumWidth: _screen_tools.default_label_width
-                        Layout.minimumHeight: _screen_tools.default_label_height
+                        Layout.minimumWidth: configurations.width - _screen_tools.default_widget_width - 20
+                        Layout.minimumHeight: _screen_tools.default_widget_height
                         model: ["Class 1", "Class 2", "Class 3", "Class 4"]
                     }
                 }
 
                 RowLayout {
                     id: crow2
+                    Layout.topMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.leftMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.rightMargin: 2 * _screen_tools.default_widget_margin
                     CustomLabel {
-                        Layout.minimumWidth: _screen_tools.default_label_width
-                        Layout.minimumHeight: _screen_tools.default_label_height
+                        Layout.minimumWidth: _screen_tools.default_widget_width
+                        Layout.minimumHeight: _screen_tools.default_widget_height
                         text: "Epoc"
                     }
                     CustomComboBox {
-                        Layout.minimumWidth: _screen_tools.default_label_width
-                        Layout.minimumHeight: _screen_tools.default_label_height
+                        Layout.minimumWidth: configurations.width - _screen_tools.default_widget_width - 20
+                        Layout.minimumHeight: _screen_tools.default_widget_height
                         model: ["1", "9", "99", "999", "9999", "99999", "999999", "9999999"]
                     }
                 }
                 RowLayout {
                     id: crow3
+                    Layout.topMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.leftMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.rightMargin: 2 * _screen_tools.default_widget_margin
                     CustomLabel {
-                        Layout.minimumWidth: _screen_tools.default_label_width
-                        Layout.minimumHeight: _screen_tools.default_label_height
+                        Layout.minimumWidth: _screen_tools.default_widget_width
+                        Layout.minimumHeight: _screen_tools.default_widget_height
                         text: "Learning Rate"
                     }
 
                     TextField {
                         id: cmbx_learn
-                        width: configurations.width / 3
+                        Layout.minimumWidth: configurations.width - _screen_tools.default_widget_width - 20
+                        Layout.minimumHeight: _screen_tools.default_widget_height
+                        placeholderText: "Example: 0.01"
                     }
                 }
             }
