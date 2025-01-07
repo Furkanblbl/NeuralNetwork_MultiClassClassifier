@@ -16,14 +16,17 @@ class CoordinateSystem : public QObject {
     Q_PROPERTY(int epocSize READ epocSize WRITE setEpocSize NOTIFY epocSizeChanged)
     Q_PROPERTY(double learningRate READ learningRate WRITE setLearningRate NOTIFY learningRateChanged)
 
+
 public:
     explicit CoordinateSystem(QObject *parent = nullptr);
+
+    Q_INVOKABLE void training();
     
     QVariantList clickedPoints() const;
     int epocSize() const;
     double learningRate() const;
 
-    void setClickedPoints(const QVariantList &points);  // Setter function
+    void setClickedPoints(const QVariantList &points);
     void setEpocSize(int &epoc);
     void setLearningRate(double &lrate);
 
@@ -31,9 +34,10 @@ signals:
     void clickedPointsChanged();
     void epocSizeChanged();
     void learningRateChanged();
+    void trainingChanged();
 
 private:
-    QVariantList m_clickedPoints;  // Store the clicked points
+    QVariantList m_clickedPoints;
     NeuralNetwork *nw;
     int _epoc_size = -1;
     double _learning_rate = -1.0;

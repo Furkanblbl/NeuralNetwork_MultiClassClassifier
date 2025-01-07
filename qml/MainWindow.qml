@@ -170,6 +170,24 @@ Window {
                         }
                     }
                 }
+
+                RowLayout {
+                    id: crow4
+                    Layout.topMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.leftMargin: 2 * _screen_tools.default_widget_margin
+                    Layout.rightMargin: 2 * _screen_tools.default_widget_margin
+                    CustomButton {
+                        id: btn_training
+                        Layout.minimumWidth: _screen_tools.default_widget_width - 20
+                        Layout.minimumHeight: _screen_tools.default_widget_height - 10
+                        _text: "Training"
+
+                        onClicked: {
+                            coordSys.training();
+                        }
+                    }
+
+                }
             }
         } // end of configurations
 
