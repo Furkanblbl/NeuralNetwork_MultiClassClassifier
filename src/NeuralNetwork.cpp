@@ -1,11 +1,11 @@
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(QObject *parent) : QObject{parent} {
+NeuralNetwork::NeuralNetwork(QObject *parent, QVariantList clicked_points, int _epoch, double _learning_rate) : QObject(parent), m_clickedPoints(clicked_points), num_of_epochs(_epoch), lr(_learning_rate) {
 
     num_inputs = 2;
     num_hidden_nodes = 2;
     num_outputs = 1;
-    num_training_sets = 4;
+    num_training_sets = m_clickedPoints.size();
 
     hidden_layer = new double[num_hidden_nodes];
     output_layer = new double[num_outputs];
@@ -22,8 +22,38 @@ NeuralNetwork::NeuralNetwork(QObject *parent) : QObject{parent} {
         output_weights[i] = new double[num_outputs];
     }
 
+    // Neural network inputs so, coordinates and labels
+    training_inputs = new double*[num_training_sets];
+    for (int i = 0; i < num_training_sets; ++i) {
+        training_inputs[i] = new double[num_inputs];
+    }
+
+    training_outputs = new double*[num_training_sets];
+    for (int i = 0; i < num_training_sets; ++i) {
+        training_outputs[i] = new double[num_outputs];
+    }
+
+    // Veri giriş işlemi
+    for (int i = 0; i < m_clickedPoints.size(); ++i) {
+        QVariantMap pointMap = m_clickedPoints[i].toMap();
+
+        training_inputs[i][0] = pointMap["x"].toDouble();
+        training_inputs[i][1] = pointMap["y"].toDouble();
+        training_outputs[i][0] = pointMap["color"].toInt();
+
+        qDebug() << "Check x:" << pointMap["x"].toDouble() 
+                << pointMap["y"].toDouble() 
+                << pointMap["color"].toDouble() << "\n";
+    }
+    training_set_order = new int[m_clickedPoints.size()];
+    for (int i = 0; i < m_clickedPoints.size(); ++i) {
+        training_set_order[i] = i;
+    }
+
     init_weight();
     update_wights_and_bias();
+    qDebug() << "num_of_epochs: " << num_of_epochs << "\n";
+    qDebug() << "lr: " << lr << "\n";
 }
 
 /**
@@ -124,15 +154,15 @@ void NeuralNetwork::init_weight() {
  */
 void NeuralNetwork::update_wights_and_bias() {
 
-    double training_inputs[num_training_sets][num_inputs] = { {0.0f, 0.0f},
-                                                           {1.0f, 0.0f},
-                                                           {0.0f, 1.0f},
-                                                           {1.0f, 1.0f} };
+    // double training_inputs[4][num_inputs] = { {0.0f, 0.0f},
+    //                                                        {1.0f, 0.0f},
+    //                                                        {0.0f, 1.0f},
+    //                                                        {1.0f, 1.0f} };
 
-    double training_outputs[num_training_sets][num_outputs] ={ {0.0f},
-                                                            {1.0f},
-                                                            {1.0f},
-                                                            {0.0f} };
+    // double training_outputs[4][num_outputs] ={ {0.0f},
+    //                                                         {1.0f},
+    //                                                         {1.0f},
+    //                                                         {0.0f} };
 
     // Train the neural network for a number of epochs
     for (int epoch = 0; epoch < num_of_epochs; epoch++) {
@@ -160,7 +190,7 @@ void NeuralNetwork::update_wights_and_bias() {
                 output_layer[j] = sigmoid(activation);
             }
 
-            printf("Input: %ld  %ld Output: %ld    Excepted Output: %g \n",
+            printf("Input: %g  %g Output: %g    Excepted Output: %g \n",
                     training_inputs[related_data][0],
                     training_inputs[related_data][1],
                     output_layer[0],
@@ -209,7 +239,7 @@ void NeuralNetwork::update_wights_and_bias() {
     for (int j = 0; j < num_hidden_nodes; j++) {
         fputs("[ ", stdout);
         for (int k = 0; k < num_inputs; k++) {
-            printf("%f ", hidden_weights[k][j]);
+            qDebug() << hidden_weights[k][j] << "\n";
         }
         fputs("] \n", stdout);
     }

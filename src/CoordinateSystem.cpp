@@ -4,7 +4,7 @@
 #include <QDebug>
 
 CoordinateSystem::CoordinateSystem(QObject *parent) : QObject(parent) {
-    nw = new NeuralNetwork();
+
 }
 
 QVariantList CoordinateSystem::clickedPoints() const {
@@ -43,6 +43,8 @@ void CoordinateSystem::setLearningRate(double &lrate) {
 
 
 void CoordinateSystem::training() {
+
+    nw = new NeuralNetwork(this, m_clickedPoints, epocSize(), learningRate());
     qDebug() << "_learning_rate:" << _learning_rate;
     qDebug() << "_epoc_size:" << _epoc_size;
 
