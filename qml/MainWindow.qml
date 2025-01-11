@@ -17,7 +17,7 @@ Window {
     visible: true
     width: _screen_tools._width
     height: _screen_tools._height
-    title: "410447 Muhammet Enes EMIR - Neural Network"
+    title: "Furkan BULBUL - Artificial Neural Network"
 
     color: "#edebe9"
 
@@ -46,6 +46,10 @@ Window {
     id: canvas
     anchors.fill: parent
     property var clickedPoints: []
+    property var linePoints: []
+    property var line_data: []
+    property bool is_line_draw: false
+
     property var cs: CoordinateSystem {
         id: coordSys
     }
@@ -79,12 +83,18 @@ Window {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            var clickedX = mouse.x - width / 2; // Orijini merkeze almak için kaydır
-            var clickedY = height / 2 - mouse.y; // Orijini merkeze almak için kaydır
+            if (canvas.is_line_draw == true) {
+                canvas.clickedPoints = canvas.line_data
 
-            // Tıklanan noktayı kaydedin
-            canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.selected_class});
-            coordSys.clickedPoints = canvas.clickedPoints;
+            }
+            else {
+                var clickedX = mouse.x - width / 2; // Orijini merkeze almak için kaydır
+                var clickedY = height / 2 - mouse.y; // Orijini merkeze almak için kaydır
+
+                // Tıklanan noktayı kaydedin
+                canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.selected_class});
+                coordSys.clickedPoints = canvas.clickedPoints;
+            }
             canvas.requestPaint();
         }
     }
@@ -190,7 +200,26 @@ Window {
                             coordSys.training();
                         }
                     }
+                    CustomButton {
+                        id: btn_draw
+                        Layout.minimumWidth: _screen_tools.default_widget_width - 20
+                        Layout.minimumHeight: _screen_tools.default_widget_height - 10
+                        _text: "Draw Line"
 
+                        onClicked: {
+                            var array = coordSys.getArray();
+                            for (var i = 0; i < array.length; i+=3) {
+                                console.log(array[i], array[i+1], array[i+2])
+                            }
+
+                            for (var i = 0; i < array.length; i+=3) {
+                                var xValue = array[i];
+                                var yValue = array[i+1];
+                                var colorValue = 4;
+                                canvas.clickedPoints.push({x: xValue, y: yValue, color: colorValue});
+                            }
+                        }
+                    }
                 }
             }
         } // end of configurations

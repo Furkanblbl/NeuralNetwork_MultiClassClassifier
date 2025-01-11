@@ -52,4 +52,35 @@ void CoordinateSystem::training() {
         QVariantMap pointMap = point.toMap();
         qDebug() << "x:" << pointMap["x"].toFloat() << " y:" << pointMap["y"].toFloat() << " class:" << pointMap["color"].toString();
     }
+
+    nw->init_weight();
+    nw->update_wights_and_bias();
+
+}
+
+QVariantList CoordinateSystem::getArray() {
+    double w1   = nw->getW1();
+    double w2   = nw->getW2();
+    double bias = nw->getBias();
+
+    qDebug() << "Weights and bias: w1 =" << w1 << ", w2 =" << w2 << ", b =" << bias;
+
+    for (int i = -320; i <= 320; i += 1) {  // Step size increased for efficiency
+        double x = i;
+        
+        // Corrected equation
+        double y = (-(w1 * x) - bias) / w2;
+        // double y = (-1 * (w1 * x + bias)) / w2;
+
+        // Denormalize y before adding to the list
+
+        qDebug() << " (-(w1 * x) - 100) / w2 -> " << w1 << ", " << x << ", " << bias << ", " << w2;
+        QVariantList rowList;
+        rowList.append(x);
+        rowList.append(y);
+        rowList.append(5);
+        line_points.append(rowList);
+
+    }
+    return line_points;
 }

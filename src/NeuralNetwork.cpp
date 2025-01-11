@@ -57,14 +57,14 @@ NeuralNetwork::NeuralNetwork(QObject *parent, QVariantList clicked_points, int _
         training_set_order[i] = i;
     }
 
-    init_weight();
-    update_wights_and_bias();
-    qDebug() << "num_of_epochs: " << num_of_epochs << "\n";
-    qDebug() << "lr: " << lr << "\n";
 
-    for (int i = 0; i < num_training_sets; i++) {
-        qDebug() << "lr: " << training_set_order[i]  << "\n";
-    }
+}
+
+double NeuralNetwork::normalizeDataX(double value) {
+    return (value - -320) / (320 - -320);
+}
+double NeuralNetwork::normalizeDataY(double value) {
+    return (value - -240) / (240 - -240);
 }
 
 /**
@@ -76,11 +76,15 @@ NeuralNetwork::NeuralNetwork(QObject *parent, QVariantList clicked_points, int _
  * @return The sigmoid value in the range (0, 1).
 */
 double NeuralNetwork::sigmoid(double x) {
-    return 1 / (1 + exp(-x));
+    return 1.0 / (1.0 + exp(-x));
 }
 
 int NeuralNetwork::sign_square(double x) {
     return (x < 0) ? -1 : 1;
+}
+
+double NeuralNetwork::denormalize(double normalized_value, double min_val, double max_val) {
+    return normalized_value * (max_val - min_val) + min_val;
 }
 
 /**
@@ -95,6 +99,11 @@ int NeuralNetwork::sign_square(double x) {
  */
 double NeuralNetwork::dSigmoid(double x) {
     return x * (1 - x);
+}
+
+double NeuralNetwork::dSigmoid2(double y) {
+    return log(y / (1.0 - y));
+    // return x * (1 - x);
 }
 
 /**
@@ -123,18 +132,12 @@ double NeuralNetwork::generate_random() {
  * @param n The number of elements in the array to be shuffled.
  *          The array should contain at least 2 elements for the shuffle to be meaningful.
  */
-void NeuralNetwork::shuffle(int* array, size_t n) {
-    if (n > 1) {
-        size_t i;
-        for (i = 0; i < n - 1; i++) {
-            // Random index between i and n-1
-            size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
-            
-            // Swap elements at index i and j
-            int t = array[j];
-            array[j] = array[i];
-            array[i] = t;
-        }
+void NeuralNetwork::shuffle(int *array, int n) {
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
 }
 
@@ -177,126 +180,49 @@ void NeuralNetwork::update_wights_and_bias() {
     // Train the neural network for a number of epochs
     for (int epoch = 0; epoch < num_of_epochs; epoch++) {
         shuffle(training_set_order, num_training_sets);
-
         for (int x = 0; x < num_training_sets; x++) {
             // Forward pass
             related_data = training_set_order[x];
-
-            // Compute hidden layer activation
-            // for (int j = 0; j < num_hidden_nodes; j++) {
-            //     double activation = hidden_layer_bias[j];
-            //     for (int k = 0; k < num_inputs; k++) {
-            //         activation += training_inputs[related_data][k] * hidden_weights[k][j];
-            //     }
-            //     hidden_layer[j] = sigmoid(activation);
-            // }
             for(int j = 0; j < num_neuron; j++) {
                 double activation = single_neuron_bias[j];
                 for (int k = 0; k < num_inputs; k++) {
                     activation += training_inputs[related_data][k] * single_neuron_weights[k][j];
                 }
-                single_layer[j] = sign_square(activation);
+                single_layer[j] = sigmoid(activation);
             }
-
-            // Compute output layer activation
-            // for (int j = 0; j < num_outputs; j++) {
-            //     double activation = output_layer_bias[j];
-            //     for (int k = 0; k < num_hidden_nodes; k++) {
-            //         activation += hidden_layer[k] * output_weights[k][j];
-            //     }
-            //     output_layer[j] = sigmoid(activation);
-            // }
-
-            printf("Input: %g  %g Output: %g    Excepted Output: %g \n",
-                    training_inputs[related_data][0],
-                    training_inputs[related_data][1],
-                    single_layer[0],
-                    training_outputs[related_data][0]
-                );
-
-            // Backpropogation
-            // Compute change in output weights
-            // double deltaOutput[num_outputs];
-
-            // for (int j = 0; j < num_outputs; j++) {
-            //     double error = (training_outputs[related_data][j] - output_layer[j]);
-            //     deltaOutput[j] = error * dSigmoid(output_layer[j]);
-            //     if (deltaOutput[j] < 0.01) {
-            //         break;
-            //     }
-            // }
-
+            
+            printf("Input: %10g %10g Output: %10g Expected Output: %10g \n",
+                training_inputs[related_data][0],
+                training_inputs[related_data][1],
+                single_layer[0],
+                training_outputs[related_data][0]
+            );
+            
+            // Backpropagation
             double delta_single_output[num_neuron];
             for(int j = 0; j < num_neuron; j++) {
                 double error = (training_outputs[related_data][j] - single_layer[j]);
-                delta_single_output[j] = error * dSigmoid(single_layer[j]);
+                if (error < 0.5) {
+                    break;
+                }
+                delta_single_output[j] = error * single_layer[j];
             }
-
-            // Compute change in hidden weights
-            // double deltaHidden[num_hidden_nodes];
-            // for (int j = 0; j < num_hidden_nodes; j++) {
-            //     double error = 0.0f;
-            //     for (int k = 0; k < num_outputs; k++) {
-            //         error += deltaOutput[k] * output_weights[j][k];
-            //     }
-            //     deltaHidden[j] = error * dSigmoid(hidden_layer[j]);
-            // }
-
-            // Apply change in output weights
-            // for (int j = 0; j < num_outputs; j++) {
-            //     output_layer_bias[j] += deltaOutput[j] * lr;
-            //     for (int k = 0; k < num_hidden_nodes; k++) {
-            //         output_weights[k][j] += hidden_layer[k] * deltaOutput[j] * lr;
-            //     }
-            // }
-
+            
+            // Weight and bias update
             for (int j = 0; j < num_neuron; j++) {
                 single_neuron_bias[j] += delta_single_output[j] * lr;
                 for (int k = 0; k < num_inputs; k++) {
-                    single_neuron_weights[k][j] += single_layer[k] * delta_single_output[j] * lr;
+                    single_neuron_weights[k][j] += training_inputs[related_data][k] * delta_single_output[j] * lr;
                 }
             }
-
-            // Apply change in hidden weights
-            // for (int j = 0; j < num_hidden_nodes; j++) {
-            //     hidden_layer_bias[j] += deltaHidden[j] * lr;
-            //     for (int k = 0; k < num_inputs; k++) {
-            //         hidden_weights[k][j] += training_inputs[related_data][k] * deltaHidden[j] * lr;
-            //     }
-            // }
-
         }
-
     }
+    weights1 = single_neuron_weights[0][0];
+    weights2 = single_neuron_weights[1][0];
+    bias =  30 * single_neuron_bias[0];
 
-
-
-    fputs("\n Final Hidden Weights\n[ ", stdout);
-    for (int j = 0; j < num_hidden_nodes; j++) {
-        fputs("[ ", stdout);
-        for (int k = 0; k < num_inputs; k++) {
-            printf("%f ", hidden_weights[k][j]);
-        }
-        fputs("] \n", stdout);
-    }
-
-    fputs("]\n Final Hidden Biases\n[ ", stdout);
-    for (int j = 0; j < num_hidden_nodes; j++) {
-        printf("%f ", hidden_layer_bias[j]);
-    }
-
-    // Print Final weights after done training
-    fputs("]\n Final Output Weights\n[ ", stdout);
-    for (int j = 0; j < num_outputs; j++) {
-        fputs("[ ", stdout);
-        for (int k = 0; k < num_hidden_nodes; k++) {
-            printf("%f ", output_weights[k][j]);
-        }
-        fputs("] \n", stdout);
-    }
-
-    fputs("]\n Final Output Biases\n[ ", stdout);
-    for (int j = 0; j < num_outputs; j++) {
-        printf("%f ", output_layer_bias[j]);
-    }
 }
+
+// QVariantList NeuralNetwork::getArray() {
+//     return line_points;
+// }

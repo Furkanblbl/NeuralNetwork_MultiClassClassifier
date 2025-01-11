@@ -4,6 +4,7 @@
 #include <QObject>
 #include "QPoint"
 #include <QVariant>
+#include <QVector>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,21 +16,33 @@
 class NeuralNetwork : public QObject
 {
     Q_OBJECT
+    // Q_PROPERTY(QVector<QVector<double>> array READ getArray NOTIFY arrayChanged)
 
     public:
         explicit NeuralNetwork(QObject *parent = nullptr, QVariantList clicked_points = QVariantList(), int _epoch = -1, double _learning_rate = -1.0);
-        void shuffle(int* array, size_t n);
+        void shuffle(int *array, int n);
+
         void init_weight();
         void update_wights_and_bias();
+
+        // Q_INVOKABLE QVariantList getArray();
 
         // Define sigmoid. Range is between [0,1]
         double sigmoid(double x);
         // Derivate of sigmoid/ Calculate error during backpropagation
         double dSigmoid(double x);
+        double dSigmoid2(double y);
         // Generate random between 0-1 for weights
         double generate_random();
-        // Define square fucntion. Value in -1,1
         int sign_square(double x);
+        double denormalize(double normalized_value, double min_val, double max_val);
+
+        double normalizeDataY(double data);
+        double normalizeDataX(double data);
+
+        double getW1() { return weights1; }
+        double getW2() { return weights2; }
+        double getBias() { return bias; }
 
     private:
         int num_inputs;             // Count of noron in the input layer
@@ -80,6 +93,12 @@ class NeuralNetwork : public QObject
         double right_y;
 
         // double line_equation = ((x1*w1 + x2*w3 + b1) * w5) + ((x1*w2 + x2*w4 + b2) * w6) + b3;
+        // QVariantList line_points;
+
+        double weights1;
+        double weights2;
+        double bias;
+
 };
 
 #endif // NEURALNETWORK_H

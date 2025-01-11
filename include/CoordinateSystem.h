@@ -21,6 +21,7 @@ public:
     explicit CoordinateSystem(QObject *parent = nullptr);
 
     Q_INVOKABLE void training();
+    Q_INVOKABLE QVariantList getArray();
     
     QVariantList clickedPoints() const;
     int epocSize() const;
@@ -41,6 +42,7 @@ private:
     NeuralNetwork *nw;
     int _epoc_size = -1;
     double _learning_rate = -1.0;
+    QVariantList line_points;
 
 };
 

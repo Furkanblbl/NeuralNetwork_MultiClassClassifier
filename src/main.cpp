@@ -4,6 +4,8 @@
 #include <QDebug>
 
 #include "CoordinateSystem.h"
+#include <QQmlContext>
+#include <QQmlEngine>
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +17,7 @@ int main(int argc, char *argv[])
     // QML headef defines
     qmlRegisterType<CoordinateSystem>("CoordinateSystem", 1, 0, "CoordinateSystem");
     qDebug() << "Current working directory:" << QDir::currentPath();
+
 
     // QML module paths
     engine.addImportPath("qrc:/qmlmodules");
