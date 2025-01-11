@@ -43,49 +43,53 @@ Window {
             property double learning_rate: -1
 
             Canvas {
-                id: canvas
-                anchors.fill: parent
-                property var clickedPoints: []
-                property var cs: CoordinateSystem {
-                    id: coordSys
-                }
+    id: canvas
+    anchors.fill: parent
+    property var clickedPoints: []
+    property var cs: CoordinateSystem {
+        id: coordSys
+    }
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.strokeStyle = "black";
+    onPaint: {
+        var ctx = getContext("2d");
+        ctx.clearRect(0, 0, width, height);
+        ctx.strokeStyle = "black";
 
-                    ctx.beginPath();
-                    ctx.moveTo(width / 2, 0);
-                    ctx.lineTo(width / 2, height);
-                    ctx.moveTo(0, height / 2);
-                    ctx.lineTo(width, height / 2);
-                    ctx.stroke();
+        // Koordinat sistemini çizin
+        ctx.beginPath();
+        ctx.moveTo(width / 2, 0); // Dikey eksen
+        ctx.lineTo(width / 2, height);
+        ctx.moveTo(0, height / 2); // Yatay eksen
+        ctx.lineTo(width, height / 2);
+        ctx.stroke();
 
-                    for (var i = 0; i < clickedPoints.length; i++) {
-                        var point = clickedPoints[i];
-                        ctx.strokeStyle = coordinateSystem.clicked_color[point.color];
-                        ctx.beginPath();
-                        ctx.moveTo(point.x - 5, point.y);
-                        ctx.lineTo(point.x + 5, point.y);
-                        ctx.moveTo(point.x, point.y - 5);
-                        ctx.lineTo(point.x, point.y + 5);
-                        ctx.stroke();
-                    }
-                }
+        // Tıklanan noktaları çizin
+        for (var i = 0; i < clickedPoints.length; i++) {
+            var point = clickedPoints[i];
+            ctx.strokeStyle = coordinateSystem.clicked_color[point.color];
+            ctx.beginPath();
+            ctx.moveTo(width / 2 + point.x - 5, height / 2 - point.y); // Orijinal koordinatları merkeze kaydır
+            ctx.lineTo(width / 2 + point.x + 5, height / 2 - point.y);
+            ctx.moveTo(width / 2 + point.x, height / 2 - point.y - 5);
+            ctx.lineTo(width / 2 + point.x, height / 2 - point.y + 5);
+            ctx.stroke();
+        }
+    }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        var clickedX = mouse.x;
-                        var clickedY = mouse.y;
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            var clickedX = mouse.x - width / 2; // Orijini merkeze almak için kaydır
+            var clickedY = height / 2 - mouse.y; // Orijini merkeze almak için kaydır
 
-                        canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.selected_class});
-                        coordSys.clickedPoints = canvas.clickedPoints;
-                        canvas.requestPaint();
-                    }
-                }
-            }
+            // Tıklanan noktayı kaydedin
+            canvas.clickedPoints.push({x: clickedX, y: clickedY, color: coordinateSystem.selected_class});
+            coordSys.clickedPoints = canvas.clickedPoints;
+            canvas.requestPaint();
+        }
+    }
+}
+
         } // end of coordinateSystem
 
         Rectangle {

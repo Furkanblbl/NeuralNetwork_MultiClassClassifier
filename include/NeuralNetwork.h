@@ -28,23 +28,29 @@ class NeuralNetwork : public QObject
         double dSigmoid(double x);
         // Generate random between 0-1 for weights
         double generate_random();
+        // Define square fucntion. Value in -1,1
+        int sign_square(double x);
 
     private:
         int num_inputs;             // Count of noron in the input layer
         int num_hidden_nodes;       // Count of noron in the hidden layer
         int num_outputs;            // Count of noron in the output layer
         int num_training_sets;      // Count of training sets
+        int num_neuron;             // Count of neuron in the system
 
         double lr;     // Learning rate, step size in the weight updates
         double *hidden_layer;       // Keep activation result in the hidden layer
         double *output_layer;       // Keep activation result in the output layer
+        double *single_layer;       // Keep activation result in the single layer
 
         double *hidden_layer_bias;  // Keep bias result in the hidden layer
         double *output_layer_bias;  // Keep bias result in the output layer
+        double *single_neuron_bias; // Keep bias result in the single layer
 
         // output-hidden, hidden-output layers wights
         double **hidden_weights;
         double **output_weights;
+        double **single_neuron_weights;
 
         // Training sets index. Every epocs compare that array and choose different order
         int *training_set_order;
@@ -60,6 +66,20 @@ class NeuralNetwork : public QObject
 
         // clicked_points data
         QVariantList m_clickedPoints;
+
+        // line equation
+        double x1, x2, w1, w2, w3, w4, w5, w6, b1, b2, b3 = 0.0;
+        double up_x;
+        double up_y;
+        double down_x;
+        double down_y;
+
+        double left_x;
+        double left_y;
+        double right_x;
+        double right_y;
+
+        // double line_equation = ((x1*w1 + x2*w3 + b1) * w5) + ((x1*w2 + x2*w4 + b2) * w6) + b3;
 };
 
 #endif // NEURALNETWORK_H

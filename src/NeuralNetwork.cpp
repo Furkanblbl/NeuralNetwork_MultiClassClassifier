@@ -5,48 +5,55 @@ NeuralNetwork::NeuralNetwork(QObject *parent, QVariantList clicked_points, int _
     num_inputs = 2;
     num_hidden_nodes = 2;
     num_outputs = 1;
+    num_neuron = 1;
     num_training_sets = m_clickedPoints.size();
 
     hidden_layer = new double[num_hidden_nodes];
     output_layer = new double[num_outputs];
+    single_layer = new double[num_neuron];
 
     hidden_layer_bias = new double[num_hidden_nodes];
     output_layer_bias = new double[num_outputs];
+    single_neuron_bias = new double[num_neuron];
 
     hidden_weights = new double*[num_inputs];
-    for (int i = 0; i < num_inputs; ++i) {
+    for (int i = 0; i < num_inputs; i++) {
         hidden_weights[i] = new double[num_hidden_nodes];
     }
     output_weights = new double*[num_hidden_nodes];
-    for (int i = 0; i < num_inputs; ++i) {
+    for (int i = 0; i < num_inputs; i++) {
         output_weights[i] = new double[num_outputs];
+    }
+    single_neuron_weights = new double*[num_inputs];
+    for (int i = 0; i < num_inputs; i++) {
+        single_neuron_weights[i] = new double[num_neuron];
     }
 
     // Neural network inputs so, coordinates and labels
     training_inputs = new double*[num_training_sets];
-    for (int i = 0; i < num_training_sets; ++i) {
+    for (int i = 0; i < num_training_sets; i++) {
         training_inputs[i] = new double[num_inputs];
     }
 
     training_outputs = new double*[num_training_sets];
-    for (int i = 0; i < num_training_sets; ++i) {
+    for (int i = 0; i < num_training_sets; i++) {
         training_outputs[i] = new double[num_outputs];
     }
 
     // Veri giriş işlemi
-    for (int i = 0; i < m_clickedPoints.size(); ++i) {
+    for (int i = 0; i < m_clickedPoints.size(); i++) {
         QVariantMap pointMap = m_clickedPoints[i].toMap();
 
-        training_inputs[i][0] = pointMap["x"].toDouble();
-        training_inputs[i][1] = pointMap["y"].toDouble();
-        training_outputs[i][0] = pointMap["color"].toInt();
+        training_inputs[i][0] = pointMap["x"].toFloat();
+        training_inputs[i][1] = pointMap["y"].toFloat();
+        training_outputs[i][0] = pointMap["color"].toFloat();
 
         qDebug() << "Check x:" << pointMap["x"].toDouble() 
                 << pointMap["y"].toDouble() 
                 << pointMap["color"].toDouble() << "\n";
     }
-    training_set_order = new int[m_clickedPoints.size()];
-    for (int i = 0; i < m_clickedPoints.size(); ++i) {
+    training_set_order = new int[num_training_sets];
+    for (int i = 0; i < num_training_sets; i++) {
         training_set_order[i] = i;
     }
 
@@ -54,6 +61,10 @@ NeuralNetwork::NeuralNetwork(QObject *parent, QVariantList clicked_points, int _
     update_wights_and_bias();
     qDebug() << "num_of_epochs: " << num_of_epochs << "\n";
     qDebug() << "lr: " << lr << "\n";
+
+    for (int i = 0; i < num_training_sets; i++) {
+        qDebug() << "lr: " << training_set_order[i]  << "\n";
+    }
 }
 
 /**
@@ -66,6 +77,10 @@ NeuralNetwork::NeuralNetwork(QObject *parent, QVariantList clicked_points, int _
 */
 double NeuralNetwork::sigmoid(double x) {
     return 1 / (1 + exp(-x));
+}
+
+int NeuralNetwork::sign_square(double x) {
+    return (x < 0) ? -1 : 1;
 }
 
 /**
@@ -140,6 +155,12 @@ void NeuralNetwork::init_weight() {
         }
     }
 
+    for (int i = 0; i < num_inputs; i++) {
+        for (int j = 0; j < num_neuron; j++) {
+            single_neuron_weights[i][j] = generate_random();
+        }
+    }
+
     for (int i = 0; i < num_outputs; i++) {
         output_layer_bias[i] = generate_random();
     }
@@ -153,17 +174,6 @@ void NeuralNetwork::init_weight() {
  * todo: write function definations
  */
 void NeuralNetwork::update_wights_and_bias() {
-
-    // double training_inputs[4][num_inputs] = { {0.0f, 0.0f},
-    //                                                        {1.0f, 0.0f},
-    //                                                        {0.0f, 1.0f},
-    //                                                        {1.0f, 1.0f} };
-
-    // double training_outputs[4][num_outputs] ={ {0.0f},
-    //                                                         {1.0f},
-    //                                                         {1.0f},
-    //                                                         {0.0f} };
-
     // Train the neural network for a number of epochs
     for (int epoch = 0; epoch < num_of_epochs; epoch++) {
         shuffle(training_set_order, num_training_sets);
@@ -173,73 +183,99 @@ void NeuralNetwork::update_wights_and_bias() {
             related_data = training_set_order[x];
 
             // Compute hidden layer activation
-            for (int j = 0; j < num_hidden_nodes; j++) {
-                double activation = hidden_layer_bias[j];
+            // for (int j = 0; j < num_hidden_nodes; j++) {
+            //     double activation = hidden_layer_bias[j];
+            //     for (int k = 0; k < num_inputs; k++) {
+            //         activation += training_inputs[related_data][k] * hidden_weights[k][j];
+            //     }
+            //     hidden_layer[j] = sigmoid(activation);
+            // }
+            for(int j = 0; j < num_neuron; j++) {
+                double activation = single_neuron_bias[j];
                 for (int k = 0; k < num_inputs; k++) {
-                    activation += training_inputs[related_data][k] * hidden_weights[k][j];
+                    activation += training_inputs[related_data][k] * single_neuron_weights[k][j];
                 }
-                hidden_layer[j] = sigmoid(activation);
+                single_layer[j] = sign_square(activation);
             }
 
             // Compute output layer activation
-            for (int j = 0; j < num_outputs; j++) {
-                double activation = output_layer_bias[j];
-                for (int k = 0; k < num_hidden_nodes; k++) {
-                    activation += hidden_layer[k] * output_weights[k][j];
-                }
-                output_layer[j] = sigmoid(activation);
-            }
+            // for (int j = 0; j < num_outputs; j++) {
+            //     double activation = output_layer_bias[j];
+            //     for (int k = 0; k < num_hidden_nodes; k++) {
+            //         activation += hidden_layer[k] * output_weights[k][j];
+            //     }
+            //     output_layer[j] = sigmoid(activation);
+            // }
 
             printf("Input: %g  %g Output: %g    Excepted Output: %g \n",
                     training_inputs[related_data][0],
                     training_inputs[related_data][1],
-                    output_layer[0],
+                    single_layer[0],
                     training_outputs[related_data][0]
                 );
 
             // Backpropogation
             // Compute change in output weights
-            double deltaOutput[num_outputs];
+            // double deltaOutput[num_outputs];
 
-            for (int j = 0; j < num_outputs; j++) {
-                double error = (training_outputs[related_data][j] - output_layer[j]);
-                deltaOutput[j] = error * dSigmoid(output_layer[j]);
+            // for (int j = 0; j < num_outputs; j++) {
+            //     double error = (training_outputs[related_data][j] - output_layer[j]);
+            //     deltaOutput[j] = error * dSigmoid(output_layer[j]);
+            //     if (deltaOutput[j] < 0.01) {
+            //         break;
+            //     }
+            // }
+
+            double delta_single_output[num_neuron];
+            for(int j = 0; j < num_neuron; j++) {
+                double error = (training_outputs[related_data][j] - single_layer[j]);
+                delta_single_output[j] = error * dSigmoid(single_layer[j]);
             }
 
             // Compute change in hidden weights
-            double deltaHidden[num_hidden_nodes];
-            for (int j = 0; j < num_hidden_nodes; j++) {
-                double error = 0.0f;
-                for (int k = 0; k < num_outputs; k++) {
-                    error += deltaOutput[k] * output_weights[j][k];
-                }
-                deltaHidden[j] = error * dSigmoid(hidden_layer[j]);
-            }
+            // double deltaHidden[num_hidden_nodes];
+            // for (int j = 0; j < num_hidden_nodes; j++) {
+            //     double error = 0.0f;
+            //     for (int k = 0; k < num_outputs; k++) {
+            //         error += deltaOutput[k] * output_weights[j][k];
+            //     }
+            //     deltaHidden[j] = error * dSigmoid(hidden_layer[j]);
+            // }
 
             // Apply change in output weights
-            for (int j = 0; j < num_outputs; j++) {
-                output_layer_bias[j] += deltaOutput[j] * lr;
-                for (int k = 0; k < num_hidden_nodes; k++) {
-                    output_weights[k][j] += hidden_layer[k] * deltaOutput[j] * lr;
+            // for (int j = 0; j < num_outputs; j++) {
+            //     output_layer_bias[j] += deltaOutput[j] * lr;
+            //     for (int k = 0; k < num_hidden_nodes; k++) {
+            //         output_weights[k][j] += hidden_layer[k] * deltaOutput[j] * lr;
+            //     }
+            // }
+
+            for (int j = 0; j < num_neuron; j++) {
+                single_neuron_bias[j] += delta_single_output[j] * lr;
+                for (int k = 0; k < num_inputs; k++) {
+                    single_neuron_weights[k][j] += single_layer[k] * delta_single_output[j] * lr;
                 }
             }
 
             // Apply change in hidden weights
-            for (int j = 0; j < num_hidden_nodes; j++) {
-                hidden_layer_bias[j] += deltaHidden[j] * lr;
-                for (int k = 0; k < num_inputs; k++) {
-                    hidden_weights[k][j] += training_inputs[related_data][k] * deltaHidden[j] * lr;
-                }
-            }
+            // for (int j = 0; j < num_hidden_nodes; j++) {
+            //     hidden_layer_bias[j] += deltaHidden[j] * lr;
+            //     for (int k = 0; k < num_inputs; k++) {
+            //         hidden_weights[k][j] += training_inputs[related_data][k] * deltaHidden[j] * lr;
+            //     }
+            // }
 
         }
+
     }
 
-    fputs("]\n Final Hidden Weights\n[ ", stdout);
+
+
+    fputs("\n Final Hidden Weights\n[ ", stdout);
     for (int j = 0; j < num_hidden_nodes; j++) {
         fputs("[ ", stdout);
         for (int k = 0; k < num_inputs; k++) {
-            qDebug() << hidden_weights[k][j] << "\n";
+            printf("%f ", hidden_weights[k][j]);
         }
         fputs("] \n", stdout);
     }
